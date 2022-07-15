@@ -186,7 +186,7 @@ root:
                 _children:
                     SomeOtherText:
                         _type: text
-                        _is_required: true # can't be null
+                        _required: true # can't be null
         SomeParagraph:
             _type: partial
             _partial: aBlock # cf 'partials' below
