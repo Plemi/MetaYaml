@@ -1,8 +1,8 @@
 {
-    "name": "romaricdrigon/metayaml",
+    "name": "plemi/metayaml",
     "type": "library",
-    "description": "Using [Yaml|Xml|json] schemas files to validate [Yaml|Xml|json] ",
-    "homepage": "http://github.com/romaricdrigon/MetaYaml",
+    "description": "Forked version of romaricdrigon/metayaml. Using [Yaml|Xml|json] schemas files to validate [Yaml|Xml|json] ",
+    "homepage": "http://github.com/plemi/MetaYaml",
     "keywords": ["yaml", "xml", "json", "validation", "schema"],
     "license": "MIT",
     "autoload": {
