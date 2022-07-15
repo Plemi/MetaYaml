@@ -3,6 +3,7 @@
 namespace RomaricDrigon\MetaYaml\NodeValidator;
 
 use RomaricDrigon\MetaYaml\Exception\NodeValidatorException;
+use RomaricDrigon\MetaYaml\Exception\UnallowedExtraKeysNodeValidatorException;
 
 class ArrayNodeValidator extends NodeValidator
 {
@@ -34,7 +35,7 @@ class ArrayNodeValidator extends NodeValidator
             return true; // we skip the next check
         }
 
-        throw new NodeValidatorException($name,
+        throw new UnallowedExtraKeysNodeValidatorException($name,
             "The node '$name' has not allowed extra key(s): ".implode(', ', array_keys($data)));
     }
 
