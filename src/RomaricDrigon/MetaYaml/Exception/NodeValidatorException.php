@@ -18,3 +18,11 @@ class NodeValidatorException extends \Exception
         return $this->node_path;
     }
 }
+
+class ChoiceNodeValidatorException extends NodeValidatorException
+{
+};
+
+class UnallowedExtraKeysNodeValidatorException extends NodeValidatorException
+{
+};
