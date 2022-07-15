@@ -3,6 +3,8 @@
 namespace RomaricDrigon\MetaYaml\NodeValidator;
 
 use RomaricDrigon\MetaYaml\Exception\NodeValidatorException;
+use RomaricDrigon\MetaYaml\Exception\UnallowedExtraKeysNodeValidatorException;
+use RomaricDrigon\MetaYaml\Exception\ChoiceNodeValidatorException;
 
 class ChoiceNodeValidator extends NodeValidator
 {
@@ -20,6 +22,12 @@ class ChoiceNodeValidator extends NodeValidator
                     $choice_config, $data);
                 $valid = true;
                 break;
+            } catch (UnallowedExtraKeysNodeValidatorException $e) {
+                $message = $e->getMessage();
+                break;
+            } catch (ChoiceNodeValidatorException $e) {
+                $message = $e->getMessage();
+                break;
             } catch (NodeValidatorException $e) {
                 $current_count_levels = count(explode('.', $e->getNodePath()));
 
@@ -31,7 +39,7 @@ class ChoiceNodeValidator extends NodeValidator
         }
 
         if (! $valid) {
-            throw new NodeValidatorException($name, "The choice node '$name' is invalid with error: $message");
+            throw new NodeValidatorException($name, $message);
         }
 
         return true;
