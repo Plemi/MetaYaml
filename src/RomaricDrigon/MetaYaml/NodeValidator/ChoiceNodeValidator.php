@@ -39,7 +39,7 @@ class ChoiceNodeValidator extends NodeValidator
         }
 
         if (! $valid) {
-            throw new NodeValidatorException($name, $message);
+            throw new ChoiceNodeValidatorException($name, $message);
         }
 
         return true;
