@@ -13,7 +13,9 @@ class ChoiceNodeValidator extends NodeValidator
         if ($this->checkRequired($name, $node, $data)) return true;
 
         $valid = false;
+        $currentError = null;
         $message = '';
+        $nodePath = '';
         $count_levels = -1;
 
         foreach ($node[$this->schema_validator->getFullName('choices')] as $choice_config) {
@@ -23,23 +25,27 @@ class ChoiceNodeValidator extends NodeValidator
                 $valid = true;
                 break;
             } catch (UnallowedExtraKeysNodeValidatorException $e) {
-                $message = $e->getMessage();
+                $currentError = $e;
                 break;
             } catch (ChoiceNodeValidatorException $e) {
-                $message = $e->getMessage();
+                $currentError = $e;
                 break;
             } catch (NodeValidatorException $e) {
                 $current_count_levels = count(explode('.', $e->getNodePath()));
 
                 if ($current_count_levels > $count_levels) {
-                    $message = $e->getMessage();
+                    $currentError = $e;
                     $count_levels = $current_count_levels;
                 }
             }
         }
 
         if (! $valid) {
-            throw new ChoiceNodeValidatorException($name, $message);
+            if ($currentError) {
+                $message = $currentError->getMessage();
+                $nodePath = $currentError->getNodePath();
+            }
+            throw new ChoiceNodeValidatorException($nodePath, $message);
         }
 
         return true;

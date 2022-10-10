@@ -62,18 +62,32 @@ class MetaYaml
     }
 
     // get the documentation
-    public function getDocumentationForNode(array $keys = array(), $unfold_all = false)
+    public function getDocumentationForNode(array $keys = array(), $unfold_all = false, $rootName = 'root')
     {
-        $node = $this->findNode($this->schema['root'], $keys, $unfold_all);
+        write_log('Entering in MetaYaml:getDocumentationForNode. ');
+        // $node = $this->findNode($this->schema['root'], $keys, $unfold_all);
+        if ('root' != $rootName) { // it's a partial
+            if (! isset($this->schema['partials']) || ! isset($this->schema['partials'][$rootName])) {
+                throw new \Exception("You're using a partial but partial '$rootName' is not defined in your schema");
+            }        
+            $node = $this->findNode($this->schema['partials'][$rootName], $keys, $unfold_all);
+        } else {
+            $node = $this->findNode($this->schema[$rootName], $keys, $unfold_all);
+        }
 
         return array(
-            'name' => end($keys) ?: 'root',
+            'name' => end($keys) ?: $rootName,
             'node' =>  $node,
             'prefix' => $this->prefix
         );
     }
     private function findNode(array $array, array $keys, $unfold_all)
     {
+        write_log('Entering in MetaYaml:findNode... ');
+        write_log('with node: ');
+        write_log($array);      
+        write_log('and keys: ');
+        write_log($keys);
         // first, if it's a partial, let's naviguate
         if (isset($array[$this->prefix.'type']) && $array[$this->prefix.'type'] === 'partial') {
             $p_name = $array[$this->prefix.'partial'];
@@ -95,9 +109,11 @@ class MetaYaml
         if (isset($array[$this->prefix.'type'])) {
             switch ($array[$this->prefix.'type']) {
                 case 'prototype': //we have to ignore one key
+                    write_log('findNode: case prototype caught ');
                     array_shift($keys);
                     return $this->findNode($array[$this->prefix.'prototype'], $keys, $unfold_all);
                 case 'array': // let's check the children
+                    write_log('findNode: case array caught ');
                     if (isset($array[$this->prefix.'children'][$keys[0]])) {
                         $child = $array[$this->prefix.'children'][$keys[0]];
                         array_shift($keys);
@@ -105,6 +121,7 @@ class MetaYaml
                     }
                     break;
                 case 'choice': // choice, return an array of possibilities
+                    write_log('findNode: case choice caught ');
                     $choices = array();
                     foreach ($array[$this->prefix.'choices'] as $name => $choice) {
                         try {
@@ -119,6 +136,9 @@ class MetaYaml
     }
     private function unfoldPartials(array $node, $unfold_all, $n = 0)
     {
+        write_log('Entering in MetaYaml:unfoldPartials... ');
+        write_log('with node: ');
+        write_log($node);  
         if ($n > 20) {
             throw new \Exception("Partial loop detected while using unfold_partial option");
         }
@@ -162,4 +182,15 @@ class MetaYaml
 
         return $node;
     }
+}
+
+// temp error log toolkit
+if ( ! function_exists('write_log')) {
+   function write_log ( $log )  {
+      if ( is_array( $log ) || is_object( $log ) ) {
+         error_log( print_r( $log, true ) );
+      } else {
+         error_log( $log );
+      }
+   }
 }
